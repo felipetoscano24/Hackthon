@@ -23,6 +23,7 @@ def validarNombre(nombre):
 
 
 def validarDNI(dni, listaDNI):
+    dni = dni.replace(".", "")
     while not dni.isdigit():
         print("El DNI debe estar compuesto solo de numeros. Ingrese nuevamente.")
         dni = input("Ingrese su DNI: ").replace(".", "")
@@ -45,12 +46,12 @@ def cargaParticipantes(listaNombre, listaDNI, equipo):
     equipo.append(dni)
 
 
-def registrar_edad(edad):
-    if edad <= 1:
+def registrar_exp(exp):
+    if exp <= 1:
         valor = 1  # trainee
-    elif edad <= 2:
+    elif exp <= 2:
         valor = 2  # junior
-    elif edad <= 5:
+    elif exp <= 5:
         valor = 4  # semi senior
     else:
         valor = 6  # senior
@@ -61,45 +62,23 @@ def pregExperienciaIt():
     preg = input("Ingrese la cantidad de años de experiencia que tiene en Informática: ")
     while not preg.isdigit():
         preg = input("Ingresá la cantidad de años usando solo números: ")
-    respuesta = registrar_edad(int(preg))
+    respuesta = registrar_exp(int(preg))
     return respuesta
 
-
-def pregEquipos(contador, equipo):
-    preg = input("¿Tienes un equipo ya armado? (si/no)\n=> ").lower()
-    while preg not in ["si", "no"]:
-        preg = input("Perdón, no entendí. ¿Tienes un equipo ya armado? (si/no)\n=> ").lower()
-
-    if preg == "si":
-        if contador < 4:
-            print(f"Llevas {contador} integrante(s) en tu grupo.")
-            main(contador + 1, equipo)   
-        else:
-            print("Tu equipo ya tiene el máximo de 4 integrantes.")
-            print("Tu equipo completo es:", equipo)
-    else:
-        print("Te asignaremos con gente que le falte integrantes")
-        print("Tu equipo parcial es:", equipo)
-
-
-
-
 def validar_numero(mensaje, minimo, maximo):
-    num = int(input(mensaje))
-    while num < minimo or num > maximo:
-        print(f"Tiene que ser entre {minimo} y {maximo}.")
-        num = int(input(mensaje))
-    return num
+    num_str = input(mensaje)
+    while not num_str.isdigit() or int(num_str) < minimo or int(num_str) > maximo:
+        print(f"Tiene que ser un número entre {minimo} y {maximo}.")
+        num_str = input(mensaje)
+    return int(num_str)
 
 
 def cargar_habilidades():
     lenguajes = ["Python", "Java", "C++", "JavaScript", "PHP", "C#"]
-    niveles = []
-    respuestas_correctas = []
 
-    for i in range(len(lenguajes)):
-        niveles.append("nulo")
-        respuestas_correctas.append(0)
+    niveles = ["Nulo"] * len(lenguajes)
+    respuestas_correctas = [0] * len(lenguajes)
+    fila_habs = [0] * len(lenguajes)
 
     print("\nLenguajes para evaluar:")
     for i in range(len(lenguajes)):
@@ -142,9 +121,21 @@ def cargar_habilidades():
         ["C", "B", "B"]
     ]
 
-    for i in range(cant):
-        opcion = validar_numero(f"\nElige el lenguaje {i+1} (1-6): ", 1, 6)
-        lenguaje_index = opcion - 1
+    elegidos = []
+
+    i = 0
+    while i < cant:
+        valido = False
+        while not valido:
+            opcion = validar_numero("\nEligí del listado anterior el lenguaje que conocés. Te haremos unas preguntas sobre el mismo para evaluar tu nivel. Seleccioná uno del 1 al 6: ", 1, 6)
+            lenguaje_index = opcion - 1
+
+            if lenguaje_index in elegidos:
+                print("Ya elegiste ese lenguaje. Elegí otro distinto.")
+            else:
+                valido = True
+
+        elegidos.append(lenguaje_index)
 
         print(f"\nPreguntas sobre {lenguajes[lenguaje_index]}:")
         aciertos = 0
@@ -152,12 +143,16 @@ def cargar_habilidades():
         for pregunta_num in range(3):
             pregunta = preguntas[lenguaje_index][pregunta_num]
             correcta = respuestas_correctas_lista[lenguaje_index][pregunta_num]
-            respuesta = input(pregunta + "\nTu respuesta: ").upper()
+            respuesta = input(pregunta + "\nTu respuesta (A/B/C): ").replace(" ","").upper()#chequear
+            while respuesta not in ["A", "B", "C"]:
+                print("Opción inválida. Responda A, B o C.")
+                respuesta = input("Tu respuesta (A/B/C): ").replace(" ","").upper() #chequear
             if respuesta == correcta:
                 aciertos += 1
 
         respuestas_correctas[lenguaje_index] = aciertos
-
+        fila_habs[lenguaje_index] = 1
+        #chequear
         if aciertos == 3:
             niveles[lenguaje_index] = "Avanzado"
         elif aciertos == 2:
@@ -168,31 +163,98 @@ def cargar_habilidades():
             niveles[lenguaje_index] = "Nulo"
 
         print(f"Resultado de {lenguajes[lenguaje_index]}: {aciertos}/3 - Nivel: {niveles[lenguaje_index]}")
+        i += 1
 
     print("\nTus resultados finales:")
     for i in range(len(lenguajes)):
         if niveles[i] != "nulo":
             print(f"{lenguajes[i]}: {niveles[i]} ({respuestas_correctas[i]}/3)")
 
-    return lenguajes, niveles, respuestas_correctas
+    return lenguajes, niveles, respuestas_correctas, fila_habs
 
 
+def pregEquipos(contador, equipo, listaNombres, listaDNIs, habilidades_matriz, niveles_matriz, exp_lista):
+    preg = input("¿Tienes un equipo ya armado? (si/no)\n=> ").lower().replace(" ","")#chquear
+    while preg not in ["si", "no"] :
+        preg = input("Perdón, no entendí. ¿Tienes un equipo ya armado? (si/no)\n=> ").lower().replace(" ","")
 
-def main(contador=1, equipo="nuevo"):
-    if equipo == "nuevo":
-        equipo = []
+    if preg == "si":
+        total = validar_numero("¿Cuántos integrantes tiene tu equipo (incluyéndote)? (minimo 2 - maximo 5): ", 2, 5)
+        faltan = total - contador
+        print(f"Faltan cargar {faltan} integrante(s) de tu equipo.")
+
+        for k in range(faltan):
+            print(f"\n--- Ingresá la información del integrante #{k+1} ---")
+            cargaParticipantes(listaNombres, listaDNIs, equipo)
+            lenguajes, niveles, respuestas_correctas, fila_habs = cargar_habilidades()
+            habilidades_matriz.append(fila_habs)
+            niveles_matriz.append(niveles)
+            exp = pregExperienciaIt()
+            exp_lista.append(exp)
+
+        print("\nTu equipo quedó conformado con los DNIs:", equipo)
+    else:
+        print("Te asignaremos con gente que le falte integrantes")
+        print("Tu equipo parcial es:", equipo)
+
+
+def main():
     mensajeBienvenida(80)
     listaDNIs = []
     listaNombres = []
-
-    
+    habilidades_matriz = []
+    niveles_matriz = []
+    exp_lista = []
+    equipos_declarados = []
+    equipo = []
     cargaParticipantes(listaNombres, listaDNIs, equipo)
 
-    
     print("\n=== Evaluación de habilidades ===")
-    lenguajes, niveles, correctas = cargar_habilidades()
+    lenguajes, niveles, respuestas_correctas, fila_habs = cargar_habilidades()
+    habilidades_matriz.append(fila_habs)
+    niveles_matriz.append(niveles)
 
     experienciaLaboral = pregExperienciaIt()
+    exp_lista.append(experienciaLaboral)
 
-    
-    pregEquipos(contador, equipo)
+    pregEquipos(contador=1, equipo=equipo,
+                listaNombres=listaNombres, listaDNIs=listaDNIs,
+                habilidades_matriz=habilidades_matriz, niveles_matriz=niveles_matriz,
+                exp_lista=exp_lista)
+
+    if len(equipo) > 0:
+        equipos_declarados.append(equipo[:])
+
+    nuevo = input("\n¿Querés cargar un nuevo participante? (si/no): ").lower()
+    while nuevo not in ["si", "no"]:
+        nuevo = input("Responda si/no: ").lower()
+
+    while nuevo == "si":
+        equipo = []
+        cargaParticipantes(listaNombres, listaDNIs, equipo)
+
+        print("\n=== Evaluación de habilidades ===")
+        lenguajes, niveles, respuestas_correctas, fila_habs = cargar_habilidades()
+        habilidades_matriz.append(fila_habs)
+        niveles_matriz.append(niveles)
+
+        experienciaLaboral = pregExperienciaIt()
+        exp_lista.append(experienciaLaboral)
+
+        pregEquipos(contador=1, equipo=equipo,
+                    listaNombres=listaNombres, listaDNIs=listaDNIs,
+                    habilidades_matriz=habilidades_matriz, niveles_matriz=niveles_matriz,
+                    exp_lista=exp_lista)
+
+        if len(equipo) > 0:
+            equipos_declarados.append(equipo[:])
+
+        nuevo = input("\n¿Querés cargar un nuevo participante? (si/no): ").lower()
+        while nuevo not in ["si", "no"]:
+            nuevo = input("Responda si/no: ").lower()
+
+    print("\n=== Fin de inscripción ===")
+    print("Participantes cargados:", len(listaDNIs))
+    print("Equipos declarados (solo DNIs):", equipos_declarados)
+
+
