@@ -173,7 +173,8 @@ def pregunta_equipos(contador, equipo, listaNombres, listaDNIs, niveles_matriz, 
         print("Te asignaremos con gente que le falte integrantes")
 
 
-def nueva_carga(preg, listaNombres, listaDNIs, niveles_matriz, equipos_declarados, lenguajes):
+def nueva_carga(listaNombres, listaDNIs, niveles_matriz, equipos_declarados, lenguajes):
+    preg = input("\n¿Querés cargar un nuevo participante o equipo? (si/no): ").lower()
     while preg not in ["si", "no"]:
         preg = input("Responda si/no: ").lower()
 
@@ -184,8 +185,7 @@ def nueva_carga(preg, listaNombres, listaDNIs, niveles_matriz, equipos_declarado
         cargar_habilidades(niveles_matriz, lenguajes)
         pregunta_equipos(1, equipo, listaNombres, listaDNIs, niveles_matriz, lenguajes)
 
-        if len(equipo) > 0:
-            equipos_declarados.append(equipo[:])
+        agregar_equipo(equipo, equipos_declarados)
 
         preg = input("\n¿Querés cargar un nuevo participante? (si/no): ").lower()
         while preg not in ["si", "no"]:
@@ -266,6 +266,10 @@ def porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz):
     print(f"El {porcentaje:.2f}% de equipos cuentan con más de 2 integrantes con un nivel Intermedio o Avanzado en Java.") 
 
 
+def agregar_equipo(equipo, equipos_declarados):
+    if len(equipo) > 0:
+        equipos_declarados.append(equipo[:])
+
 def main():
     #LISTAS
     lenguajes = ["Python", "Java", "C++", "JavaScript", "PHP", "C#"]
@@ -284,12 +288,10 @@ def main():
     #PERTENECE A UN EQUIPO?
     pregunta_equipos(1, equipo, listaNombres, listaDNIs, niveles_matriz, lenguajes)
 
-    if len(equipo) > 0:
-        equipos_declarados.append(equipo[:])
+    agregar_equipo(equipo, equipos_declarados)
 
     #CARGA DE NUEVOS PARTICIPANTES Y/O EQUIPOS
-    nuevo = input("\n¿Querés cargar un nuevo participante o equipo? (si/no): ").lower()
-    nueva_carga(nuevo, listaNombres, listaDNIs, niveles_matriz, equipos_declarados, lenguajes)
+    nueva_carga(listaNombres, listaDNIs, niveles_matriz, equipos_declarados, lenguajes)
 
     #REPORTES
     print("\n=== Fin de inscripción ===")
@@ -303,3 +305,4 @@ def main():
 
 
 main()
+
