@@ -1,4 +1,4 @@
-def mensajeBienvenida():
+def mensaje_bienvenida():
     print(
         "=" * 80 + "\n" +
         "BIENVENIDO/A AL SISTEMA DE INSCRIPCIÓN DE SKILLMATCH".center(80) + "\n" +
@@ -15,14 +15,14 @@ def mensajeBienvenida():
     )
 
 
-def validarNombre(nombre):
+def validar_nombre(nombre):
     while len(nombre) < 3 or not nombre.isalpha():
         print("El nombre es demasiado corto o tiene un número, ingrese nuevamente")
         nombre = input("Ingrese su nombre: ").title()
     return nombre
 
 
-def validarDNI(dni, listaDNI):
+def validar_dni(dni, listaDNI):
     dni = dni.replace(".", "")
     while not dni.isdigit():
         print("El DNI debe estar compuesto solo de numeros. Ingrese nuevamente.")
@@ -36,12 +36,12 @@ def validarDNI(dni, listaDNI):
     return dni
 
 
-def cargaParticipantes(listaNombre, listaDNI, equipo):
+def carga_participantes(listaNombre, listaDNI, equipo):
     nombre = input("Ingrese su nombre: ").title()
-    nombre = validarNombre(nombre)
+    nombre = validar_nombre(nombre)
     listaNombre.append(nombre)
     dni = input("Ingrese su DNI: ").replace(".", "")
-    dni = validarDNI(dni, listaDNI)
+    dni = validar_dni(dni, listaDNI)
     listaDNI.append(dni)
     equipo.append(dni)
 
@@ -54,8 +54,8 @@ def validar_numero(mensaje, minimo, maximo):
     return int(num_str)
 
 
-def cargar_habilidades(matriz,lenguajes):
-    
+def cargar_habilidades(matriz, lenguajes):
+
     niveles = ["Nulo"] * len(lenguajes)
     respuestas_correctas = [0] * len(lenguajes)
 
@@ -148,7 +148,7 @@ def cargar_habilidades(matriz,lenguajes):
     
     matriz.append(niveles)
 
-def pregEquipos(contador, equipo, listaNombres, listaDNIs, niveles_matriz,lenguajes):
+def pregunta_equipos(contador, equipo, listaNombres, listaDNIs, niveles_matriz, lenguajes):
     preg = input("¿Tenés un equipo ya armado? (si o no)\n=> ").lower().strip()
     while preg not in ["si", "no"]:
         preg = input("Perdón, no entendí. ¿Tenés un equipo ya armado? (si o no)\n=> ").lower().strip()
@@ -160,8 +160,8 @@ def pregEquipos(contador, equipo, listaNombres, listaDNIs, niveles_matriz,lengua
 
         for k in range(faltan):
             print(f"\n--- Ingresá la información del integrante #{k+2} ---")
-            cargaParticipantes(listaNombres, listaDNIs, equipo)
-            cargar_habilidades(niveles_matriz,lenguajes) 
+            carga_participantes(listaNombres, listaDNIs, equipo)
+            cargar_habilidades(niveles_matriz, lenguajes)
 
         print("\nTu equipo quedó conformado por los siguientes participantes:",end=" ")
         for i in range (len(equipo)):
@@ -173,7 +173,26 @@ def pregEquipos(contador, equipo, listaNombres, listaDNIs, niveles_matriz,lengua
         print("Te asignaremos con gente que le falte integrantes")
 
 
-def recorrer_matriz_equipos(mensaje,matriz):
+def nueva_carga(preg, listaNombres, listaDNIs, niveles_matriz, equipos_declarados, lenguajes):
+    while preg not in ["si", "no"]:
+        preg = input("Responda si/no: ").lower()
+
+    while preg == "si":
+        equipo = []
+        carga_participantes(listaNombres, listaDNIs, equipo)
+        print("\n=== Evaluación de habilidades ===")
+        cargar_habilidades(niveles_matriz, lenguajes)
+        pregunta_equipos(1, equipo, listaNombres, listaDNIs, niveles_matriz, lenguajes)
+
+        if len(equipo) > 0:
+            equipos_declarados.append(equipo[:])
+
+        preg = input("\n¿Querés cargar un nuevo participante? (si/no): ").lower()
+        while preg not in ["si", "no"]:
+            preg = input("Responda si/no: ").lower()
+
+
+def recorrer_matriz_equipos(mensaje, matriz):
     print("=" * 110)
     print(mensaje.center(110))
     print("=" * 110)
@@ -231,7 +250,7 @@ def contador_basico_dos_lenguajes(niveles_matriz):
     print(f"\nCantidad de participantes con nivel Básico en más de 2 lenguajes: {contador}\n")
 
 
-def porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz,):
+def porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz):
     total_equipos = len(equipos_declarados)  # cantidad total de equipos cargados
     contador_si_cumplen = 0
     for equipo in equipos_declarados:
@@ -246,23 +265,6 @@ def porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz,):
     porcentaje = (contador_si_cumplen / total_equipos) * 100
     print(f"El {porcentaje:.2f}% de equipos cuentan con más de 2 integrantes con un nivel Intermedio o Avanzado en Java.") 
 
-def secondMain(preg,listaNombres,listaDNIs,niveles_matriz,equipos_declarados,lenguajes):
-    while preg not in ["si", "no"]:
-        preg = input("Responda si/no: ").lower()
-
-    while preg == "si":
-        equipo = []
-        print("\n=== Evaluación de habilidades ===")
-        cargar_habilidades(niveles_matriz,lenguajes)
-        cargaParticipantes(listaNombres, listaDNIs, equipo)
-        pregEquipos(1, equipo, listaNombres, listaDNIs,niveles_matriz)
-
-        if len(equipo) > 0:
-            equipos_declarados.append(equipo[:])
-
-        preg = input("\n¿Querés cargar un nuevo participante? (si/no): ").lower()
-        while preg not in ["si", "no"]:
-            preg = input("Responda si/no: ").lower()
 
 def main():
     #LISTAS
@@ -274,28 +276,30 @@ def main():
     niveles_matriz = []
     equipos_declarados = []
     #MENSAJE DE BIENVENIDA
-    mensajeBienvenida()
+    mensaje_bienvenida()
     #CARGA DE PARTICIPANTES Y EQUIPOS
-    cargaParticipantes(listaNombres, listaDNIs, equipo)
+    carga_participantes(listaNombres, listaDNIs, equipo)
     print("\n=== Evaluación de habilidades ===")
-    cargar_habilidades(niveles_matriz,lenguajes) 
+    cargar_habilidades(niveles_matriz, lenguajes)
     #PERTENECE A UN EQUIPO?
-    pregEquipos(1, equipo, listaNombres, listaDNIs, niveles_matriz,lenguajes)
+    pregunta_equipos(1, equipo, listaNombres, listaDNIs, niveles_matriz, lenguajes)
 
     if len(equipo) > 0:
         equipos_declarados.append(equipo[:])
 
     #CARGA DE NUEVOS PARTICIPANTES Y/O EQUIPOS
     nuevo = input("\n¿Querés cargar un nuevo participante o equipo? (si/no): ").lower()
-
-    secondMain(nuevo,listaNombres,listaDNIs,niveles_matriz,equipos_declarados,lenguajes)
+    nueva_carga(nuevo, listaNombres, listaDNIs, niveles_matriz, equipos_declarados, lenguajes)
 
     #REPORTES
     print("\n=== Fin de inscripción ===")
     print("Participantes cargados:", len(listaDNIs))
     recorrer_matriz_equipos("MATRIZ DE EQUIPOS", equipos_declarados)
-    recorrer_matriz_nivel("MATRIZ DE HABILIDADES",niveles_matriz,listaDNIs)
+    recorrer_matriz_nivel("MATRIZ DE HABILIDADES", niveles_matriz, listaDNIs)
     porcentaje_avanzados_python(niveles_matriz)
     porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz)
     contador_basico_dos_lenguajes(niveles_matriz)
     print("¡Gracias por usar el sistema de inscripción de SkillMatch!. Éxitos en el hackathon!")
+
+
+main()
