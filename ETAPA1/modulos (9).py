@@ -211,12 +211,11 @@ def recorrer_matriz_equipos(mensaje, matriz):
         print()
 
 
-def recorrer_matriz_nivel(mensaje,matriz,fila):
+def recorrer_matriz_nivel(mensaje,matriz,fila,lenguajes):
     print("=" * 110)
     print(mensaje.center(110))
     print("=" * 110)
 
-    lenguajes = ["Python", "Java", "C++", "JavaScript", "PHP", "C#"]
     # encabezado
     print("DNI"," " * (len(fila)-1), end="")
     for i in range(len(lenguajes)):
@@ -270,6 +269,7 @@ def agregar_equipo(equipo, equipos_declarados):
     if len(equipo) > 0:
         equipos_declarados.append(equipo[:])
 
+
 def main():
     #LISTAS
     lenguajes = ["Python", "Java", "C++", "JavaScript", "PHP", "C#"]
@@ -297,13 +297,8 @@ def main():
     print("\n=== Fin de inscripción ===")
     print("Participantes cargados:", len(listaDNIs))
     recorrer_matriz_equipos("MATRIZ DE EQUIPOS", equipos_declarados)
-    recorrer_matriz_nivel("MATRIZ DE HABILIDADES", niveles_matriz, listaDNIs)
+    recorrer_matriz_nivel("MATRIZ DE HABILIDADES", niveles_matriz, listaDNIs, lenguajes)
     porcentaje_avanzados_python(niveles_matriz)
     porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz)
     contador_basico_dos_lenguajes(niveles_matriz)
     print("¡Gracias por usar el sistema de inscripción de SkillMatch!. Éxitos en el hackathon!")
-
-
-
-
-
