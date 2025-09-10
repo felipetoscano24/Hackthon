@@ -142,7 +142,7 @@ def cargar_habilidades(matriz, lenguajes):
 
     print("\nTus resultados finales:")
     for i in range(len(lenguajes)):
-        if niveles[i] != "nulo":
+        if niveles[i] != "Nulo":
             print(f"{lenguajes[i]}: {niveles[i]} ({respuestas_correctas[i]}/3)")
     
     
@@ -302,6 +302,7 @@ def main():
     porcentaje_equipos_java(equipos_declarados, listaDNIs, niveles_matriz)
     contador_basico_dos_lenguajes(niveles_matriz)
     print("¡Gracias por usar el sistema de inscripción de SkillMatch!. Éxitos en el hackathon!")
+
 
 
 
