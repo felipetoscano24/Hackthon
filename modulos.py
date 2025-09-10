@@ -304,5 +304,5 @@ def main():
     print("¡Gracias por usar el sistema de inscripción de SkillMatch!. Éxitos en el hackathon!")
 
 
-main()
+
 
